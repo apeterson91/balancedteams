@@ -1,0 +1,58 @@
+---
+title: "Introduction to Balanced Teams"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Introduction to Balanced Teams}
+  %\VignetteDepends{dplyr}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+library(balancedteams)
+library(dplyr)
+```
+
+```{r, echo = FALSE}
+GetMeanScore <- function(df) {
+  out <- dplyr::group_by(df, team_id) %>% 
+  dplyr::summarize(`Mean Score` = mean(group_score),
+            `# Groups` = dplyr::n()) %>% 
+  dplyr::arrange(team_id)
+  
+  return(out)
+}
+```
+
+```{r}
+head(mens_team)
+```
+
+```{r}
+team_config_one <- GenerateBalancedTeams(mens_team$group_id, 
+                                         mens_team$group_score,
+                                         num_teams = 7)
+GetMeanScore(team_config_one)
+```
+
+```{r}
+team_config_two <- GenerateBalancedTeams(mens_team$group_id, 
+                                         mens_team$group_score, 
+                                         num_teams = 7)
+GetMeanScore(team_config_two)
+```
+
+
+```{r}
+team_config_three <- GenerateBalancedTeams(mens_team$group_id, 
+                                           mens_team$group_score,
+                                           num_teams = 6)
+GetMeanScore(team_config_three)
+```
