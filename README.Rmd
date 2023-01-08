@@ -1,5 +1,6 @@
 ---
 output: github_document
+bibliography: docs/references.bib
 ---
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
@@ -19,12 +20,14 @@ knitr::opts_chunk$set(
 [![Lifecycle: experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
 <!-- badges: end -->
 
-The balancedteams R package (currently) uses a greedy algorithm that takes a 
-player or group (for players that baggage together) score and assigns the 
-“best” group to the worst performing team, starting with some random 
-initialization of the teams. There are a number of ways to come up with this 
-score but common methods used by our collaborators include an average of a 
-self-survey and/or a captain’s assessment of a player’s athleticism.
+The balancedteams R package uses a 
+[mixed integer linear programming](https://en.wikipedia.org/wiki/Integer_programming)
+algorithm [@ompr] that takes a player or group (for players that baggage 
+together) score and assigns the “best” group to the worst performing team, 
+starting with some random initialization of the teams. There are a number of 
+ways to come up with this score but common methods used by our collaborators 
+include an average of a self-survey and/or a captain’s assessment of a 
+player’s athleticism.
 
 ## Installation
 
@@ -47,7 +50,8 @@ library(dplyr)
 ```{r aux_functions, echo = FALSE}
 GetMeanScore <- function(df) {
   out <- dplyr::group_by(df, team_id) %>% 
-  dplyr::summarize(`Mean Score` = mean(group_score),
+  dplyr::summarize(`Mean Score` = mean(score),
+                   `Median Score` = median(score),
             `# Groups` = dplyr::n()) %>% 
   dplyr::arrange(team_id)
   

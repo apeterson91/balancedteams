@@ -20,5 +20,7 @@ RoxygenNote: 7.1.2
 Imports: 
     dplyr,
     magrittr,
-    qpdf
+    ompr,
+    ompr.roi,
+    ROI.plugin.glpk
 Config/testthat/edition: 3

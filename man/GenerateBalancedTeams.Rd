@@ -8,7 +8,7 @@ GenerateBalancedTeams(
   group_id,
   group_score,
   num_teams,
-  max_num_team = floor(length(group_id)/num_teams)
+  max_num_team = ceiling(length(group_id)/num_teams)
 )
 }
 \arguments{

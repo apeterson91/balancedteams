@@ -10,53 +10,46 @@ GenerateBalancedTeams <- function(group_id,
                                   group_score,
                                   num_teams,
                                   max_num_team =
-                                    floor(length(group_id) / num_teams) ) {
+                                    ceiling(length(group_id) / num_teams)) {
 
   stopifnot(length(group_id) == length(group_score))
-
   num_groups <- length(group_id)
-  remainder <- num_groups - max_num_team * num_teams
-  init_groups <- sample(1:num_groups, num_teams)
-  init_teams <- sample(1:num_teams, num_teams)
+  max_num_team <- rep(max_num_team, num_teams)
 
-  ## For R CMD check
-  team_id <- NULL
+  requireNamespace("ROI.plugin.glpk")
 
-  team_scores <- data.frame(team_id = 1:num_teams,
-                            group_id = init_groups,
-                            group_score = group_score[init_groups])
+  ## For R CMD CHECK
+  x <- i <- j <- i_two <- j_two <- value <- id <- NULL
 
-  groups_to_assign <- setdiff(group_id, init_groups)
+  model <- ompr::MIPModel() %>%
+  ## binary variable 1 iff player i is assigned to team j
+  ompr::add_variable(x[i, j], i = 1:num_groups, j = 1:num_teams,
+                     type = "binary") %>%
+  ## minimize the difference between team group_score
+  ompr::set_objective(
+    ompr::sum_over((group_score[i] * x[i, j]) -
+                     (group_score[i_two] * x[i_two,j_two]),
+                         i = 1:num_groups, j = 1:num_teams,
+                         i_two = 1:num_groups, j_two = 1:num_teams),
+    sense = "min") %>%
+  # we cannot exceed the max capacity of a team
+  ompr::add_constraint(ompr::sum_over(x[i, j], i = 1:num_groups) <=
+                         max_num_team[j],
+                       j = 1:num_teams) %>%
+  # each player needs to be assigned to one team
+  ompr::add_constraint(ompr::sum_over(x[i, j], j = 1:num_teams) == 1,
+                       i = 1:num_groups)
 
-  while(length(groups_to_assign)) {
-    max_group_ix <- which.max(group_score[groups_to_assign])
-    if (length(groups_to_assign) <= remainder) {
-      max_num_team <- Inf
-    }
-    min_team <- .get_min_team(team_scores, max_num_team)
-    team_scores <- rbind(team_scores,
-                         data.frame(team_id = min_team,
-                                    group_id = group_id[groups_to_assign][max_group_ix],
-                                    group_score = group_score[groups_to_assign][max_group_ix]))
-    groups_to_assign <- setdiff(groups_to_assign, group_id[groups_to_assign][max_group_ix])
-  }
+  result <- ompr::solve_model(model, ompr.roi::with_ROI(solver = "glpk"))
 
-  team_scores <- team_scores %>%
-    dplyr::arrange(team_id,group_id,group_score)
 
-  return(team_scores)
-}
+  team_assignments <- result %>%
+    ompr::get_solution(x[i, j]) %>%
+    dplyr::as_tibble() %>%
+    dplyr::filter(value == 1) %>%
+    dplyr::transmute(group_id = group_id[i],
+                     team_id = j,
+                     score = group_score[i])
 
-.get_min_team <- function(df, max_num_team) {
-  ## For R CMD check
-  team_id <- group_score <- med_score <- num_players <- NULL
-
-  team_min <- dplyr::group_by(df, team_id) %>%
-    dplyr::summarize(mean_score = mean(group_score),
-                     num_players = dplyr::n()) %>%
-    dplyr::arrange(med_score, num_players) %>%
-    dplyr::filter(num_players < {{max_num_team}}) %>%
-    dplyr::filter(dplyr::row_number() == 1) %>%
-    dplyr::pull(team_id)
-  return(team_min)
+  return(team_assignments)
 }
