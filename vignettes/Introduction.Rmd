@@ -8,7 +8,7 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
-```{r, include = FALSE}
+```{r opts, include = FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>"
@@ -20,7 +20,7 @@ library(balancedteams)
 library(dplyr)
 ```
 
-```{r, echo = FALSE}
+```{r aux_function, echo = FALSE}
 GetMeanScore <- function(df) {
   out <- dplyr::group_by(df, team_id) %>% 
   dplyr::summarize(`Mean Score` = mean(score),
@@ -31,20 +31,35 @@ GetMeanScore <- function(df) {
 }
 ```
 
-```{r}
+```{r data}
 head(mens_team)
 ```
 
-```{r}
+```{r greedy_7}
 team_config_one <- GenerateBalancedTeams(mens_team$group_id, 
                                          mens_team$group_score,
                                          num_teams = 7)
 GetMeanScore(team_config_one)
 ```
 
-```{r}
+```{r greedy_7_2}
 team_config_two <- GenerateBalancedTeams(mens_team$group_id, 
+                                         mens_team$group_score,
+                                         num_teams = 7)
+GetMeanScore(team_config_two)
+```
+
+```{r greedy_6}
+team_config_three <- GenerateBalancedTeams(mens_team$group_id, 
                                            mens_team$group_score,
                                            num_teams = 6)
-GetMeanScore(team_config_two)
+GetMeanScore(team_config_three)
+```
+
+```{r MILP}
+team_config_four <- GenerateBalancedTeams(mens_team$group_id, 
+                                           mens_team$group_score,
+                                           num_teams = 7,
+                                           method = "MILP")
+GetMeanScore(team_config_four)
 ```

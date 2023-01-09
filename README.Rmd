@@ -20,9 +20,10 @@ knitr::opts_chunk$set(
 [![Lifecycle: experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
 <!-- badges: end -->
 
-The balancedteams R package uses a 
+The balancedteams R package offers a suite of methods --- currently two --- 
+including a greedy heuristic algorithm as well as a 
 [mixed integer linear programming](https://en.wikipedia.org/wiki/Integer_programming)
-algorithm [@ompr] that takes a player or group (for players that baggage 
+algorithm [@ompr] that each take a player or group (for players that baggage 
 together) score and assigns the “best” group to the worst performing team, 
 starting with some random initialization of the teams. There are a number of 
 ways to come up with this score but common methods used by our collaborators 
@@ -40,9 +41,10 @@ devtools::install_github("apeterson91/balancedteams)
 
 ## Example
 
-This is a basic example which shows you generate teams.
+This is a basic example which shows you the basic input and output data
+structures as well as the package syntax.
 
-```{r libraries}
+```{r libraries, message=FALSE,warning=FALSE}
 library(balancedteams)
 library(dplyr)
 ```
@@ -52,7 +54,7 @@ GetMeanScore <- function(df) {
   out <- dplyr::group_by(df, team_id) %>% 
   dplyr::summarize(`Mean Score` = mean(score),
                    `Median Score` = median(score),
-            `# Groups` = dplyr::n()) %>% 
+            `# Players` = dplyr::n()) %>% 
   dplyr::arrange(team_id)
   
   return(out)
@@ -66,11 +68,15 @@ head(mens_team)
 ```{r algorithm}
 team_config_one <- GenerateBalancedTeams(mens_team$group_id, 
                                          mens_team$group_score,
-                                         num_teams = 7)
+                                         num_teams = 7,
+                                         max_num_team = 11,
+                                         method = "greedy")
 GetMeanScore(team_config_one)
 ```
 
 
 ## Code of Conduct
 
-Please note that the balancedteams project is released with a [Contributor Code of Conduct](https://contributor-covenant.org/version/2/0/CODE_OF_CONDUCT.html). By contributing to this project, you agree to abide by its terms.
+Please note that the balancedteams project is released with a
+[Contributor Code of Conduct](https://contributor-covenant.org/version/2/0/CODE_OF_CONDUCT.html). 
+By contributing to this project, you agree to abide by its terms.

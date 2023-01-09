@@ -9,14 +9,15 @@
 experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
 <!-- badges: end -->
 
-The balancedteams R package uses a [mixed integer linear
-programming](https://en.wikipedia.org/wiki/Integer_programming)
-algorithm (Schumacher 2022) that takes a player or group (for players
-that baggage together) score and assigns the “best” group to the worst
-performing team, starting with some random initialization of the teams.
-There are a number of ways to come up with this score but common methods
-used by our collaborators include an average of a self-survey and/or a
-captain’s assessment of a player’s athleticism.
+The balancedteams R package offers a suite of methods — currently two —
+including a greedy heuristic algorithm as well as a [mixed integer
+linear programming](https://en.wikipedia.org/wiki/Integer_programming)
+algorithm (Schumacher 2022) that each take a player or group (for
+players that baggage together) score and assigns the “best” group to the
+worst performing team, starting with some random initialization of the
+teams. There are a number of ways to come up with this score but common
+methods used by our collaborators include an average of a self-survey
+and/or a captain’s assessment of a player’s athleticism.
 
 ## Installation
 
@@ -29,19 +30,12 @@ devtools::install_github("apeterson91/balancedteams)
 
 ## Example
 
-This is a basic example which shows you generate teams.
+This is a basic example which shows you the basic input and output data
+structures as well as the package syntax.
 
 ``` r
 library(balancedteams)
 library(dplyr)
-#> 
-#> Attaching package: 'dplyr'
-#> The following objects are masked from 'package:stats':
-#> 
-#>     filter, lag
-#> The following objects are masked from 'package:base':
-#> 
-#>     intersect, setdiff, setequal, union
 ```
 
 ``` r
@@ -58,19 +52,20 @@ head(mens_team)
 ``` r
 team_config_one <- GenerateBalancedTeams(mens_team$group_id, 
                                          mens_team$group_score,
-                                         num_teams = 7)
-#> Loading required package: ROI.plugin.glpk
+                                         num_teams = 7,
+                                         max_num_team = 11,
+                                         method = "greedy")
 GetMeanScore(team_config_one)
 #> # A tibble: 7 × 4
-#>   team_id `Mean Score` `Median Score` `# Groups`
-#>     <int>        <dbl>          <dbl>      <int>
-#> 1       1         46.9           45.0         11
-#> 2       2         51.6           49.6         11
-#> 3       3         53.9           53.9         11
-#> 4       4         49.2           50.7         11
-#> 5       5         46.8           44.4         11
-#> 6       6         53.7           54.1         11
-#> 7       7         48.6           47.6         11
+#>   team_id `Mean Score` `Median Score` `# Players`
+#>     <int>        <dbl>          <dbl>       <int>
+#> 1       1         52.4           49.4          11
+#> 2       2         52.4           50.7          11
+#> 3       3         51.0           49.1          11
+#> 4       4         48.9           48.0          11
+#> 5       5         50.0           50.1          11
+#> 6       6         48.8           47.7          11
+#> 7       7         47.2           47.6          11
 ```
 
 ## Code of Conduct
