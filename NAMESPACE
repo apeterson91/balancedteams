@@ -2,4 +2,6 @@
 
 export("%>%")
 export(GenerateBalancedTeams)
+export(GreedyTeams)
+export(MILPTeams)
 importFrom(magrittr,"%>%")

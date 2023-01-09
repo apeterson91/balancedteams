@@ -8,7 +8,8 @@ GenerateBalancedTeams(
   group_id,
   group_score,
   num_teams,
-  max_num_team = ceiling(length(group_id)/num_teams)
+  max_num_team = ceiling(length(group_id)/num_teams),
+  method = "greedy"
 )
 }
 \arguments{
@@ -21,6 +22,11 @@ GenerateBalancedTeams(
 \item{max_num_team}{Maximum number of groups / team. Default value is set
 to be the floor of the total number of groups divided by the number of
 teams.}
+
+\item{method}{One of c("greedy","MILP") indicating whether a greedy
+algorithm or a mixed integer linear programming routine should be used
+to estimate the team assignments. The latter is more optimal but the
+former is more memory efficient.}
 }
 \description{
 Generate Balanced Teams

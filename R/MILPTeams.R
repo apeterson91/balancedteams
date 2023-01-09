@@ -3,12 +3,11 @@
 #' @param group_id Identifier for group.
 #' @param group_score Score associated with group.
 #' @param num_teams Number of teams to generate.
-#' @param max_num_team Maximum number of groups / team. Default value is set
-#'   to be the floor of the total number of groups divided by the number of
-#'   teams.
+#' @param num_groups Number of groups included in group_id.
+#' @param max_num_team Maximum number of groups / team.
 #' @export
 MILPTeams <- function(group_id, group_score, num_teams,
-                            num_groups, max_num_team) {
+                      num_groups, max_num_team) {
 
   max_num_team <- rep(max_num_team, num_teams)
 

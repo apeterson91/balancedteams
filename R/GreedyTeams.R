@@ -2,9 +2,8 @@
 #' @param group_id Identifier for group.
 #' @param group_score Score associated with group.
 #' @param num_teams Number of teams to generate.
-#' @param max_num_team Maximum number of groups / team. Default value is set
-#'   to be the floor of the total number of groups divided by the number of
-#'   teams.
+#' @param num_groups Number of groups included in group_id.
+#' @param max_num_team Maximum number of groups / team.
 #' @export
 GreedyTeams <- function(group_id, group_score, num_teams,
                         num_groups, max_num_team) {
@@ -46,7 +45,7 @@ GreedyTeams <- function(group_id, group_score, num_teams,
 
 .get_min_team <- function(df, max_num_team) {
   ## For R CMD check
-  team_id <- group_score <- med_score <- num_players <- NULL
+  team_id <- med_score <- num_players <- score <-  NULL
 
   team_min <- dplyr::group_by(df, team_id) %>%
     dplyr::summarize(mean_score = mean(score),
