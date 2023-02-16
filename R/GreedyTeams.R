@@ -52,7 +52,7 @@ GreedyTeams <- function(group_id, group_score,
   team_id <- med_score <- num_players <- score <-  NULL
 
   team_min <- dplyr::group_by(df, team_id) %>%
-    dplyr::summarize(mean_score = mean(score),
+    dplyr::summarize(mean_score = sum(score) / sum(num_players),
                      num_players = sum(num_players)) %>%
     dplyr::ungroup() %>%
     dplyr::arrange(mean_score, num_players) %>%
