@@ -65,7 +65,7 @@ GenerateBalancedTeams <- function(df,
     player_id_strata <- df %>%
       dplyr::select(player_id, strata)
     team_assignments <- team_assignments %>%
-      left_join(player_id_strata, by = "player_id")
+      dplyr::left_join(player_id_strata, by = "player_id")
   }
 
 
