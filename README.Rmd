@@ -23,12 +23,11 @@ knitr::opts_chunk$set(
 The balancedteams R package offers a suite of methods --- currently two --- 
 including a greedy heuristic algorithm as well as a 
 [mixed integer linear programming](https://en.wikipedia.org/wiki/Integer_programming)
-algorithm [@ompr] that each take a player or group (for players that baggage 
-together) score and assigns the “best” group to the worst performing team, 
-starting with some random initialization of the teams. There are a number of 
-ways to come up with this score but common methods used by our collaborators 
-include an average of a self-survey and/or a captain’s assessment of a 
-player’s athleticism.
+algorithm [@ompr] that creates a "balanced" set of team assignments according
+to player scores and, optionally, accounting for a strata indicator. 
+There are a number of ways to come up with this score but common methods used 
+by our collaborators include an average of a self-survey and/or a captain’s 
+assessment of a player’s athleticism.
 
 ## Installation
 
@@ -66,8 +65,7 @@ head(mens_team)
 ```
 
 ```{r algorithm}
-team_config_one <- GenerateBalancedTeams(mens_team$group_id, 
-                                         mens_team$group_score,
+team_config_one <- GenerateBalancedTeams(mens_team, 
                                          num_teams = 7,
                                          max_num_team = 11,
                                          method = "greedy")

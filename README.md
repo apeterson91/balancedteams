@@ -12,12 +12,11 @@ experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](h
 The balancedteams R package offers a suite of methods — currently two —
 including a greedy heuristic algorithm as well as a [mixed integer
 linear programming](https://en.wikipedia.org/wiki/Integer_programming)
-algorithm (Schumacher 2022) that each take a player or group (for
-players that baggage together) score and assigns the “best” group to the
-worst performing team, starting with some random initialization of the
-teams. There are a number of ways to come up with this score but common
-methods used by our collaborators include an average of a self-survey
-and/or a captain’s assessment of a player’s athleticism.
+algorithm (Schumacher 2022) that creates a “balanced” set of team
+assignments according to player scores and, optionally, accounting for a
+strata indicator. There are a number of ways to come up with this score
+but common methods used by our collaborators include an average of a
+self-survey and/or a captain’s assessment of a player’s athleticism.
 
 ## Installation
 
@@ -40,18 +39,17 @@ library(dplyr)
 
 ``` r
 head(mens_team)
-#>   group_id group_score
-#> 1        1    52.58307
-#> 2        2    56.81345
-#> 3        3    45.01116
-#> 4        4    62.80059
-#> 5        5    43.71553
-#> 6        6    39.33750
+#>   group_id player_id num_players player_score
+#> 1        1         1           1     33.33851
+#> 2        2         2           1     60.36581
+#> 3        3         3           1     44.16801
+#> 4        4         4           1     53.94389
+#> 5        5         5           1     56.59137
+#> 6        6         6           1     42.08316
 ```
 
 ``` r
-team_config_one <- GenerateBalancedTeams(mens_team$group_id, 
-                                         mens_team$group_score,
+team_config_one <- GenerateBalancedTeams(mens_team, 
                                          num_teams = 7,
                                          max_num_team = 11,
                                          method = "greedy")
@@ -59,13 +57,13 @@ GetMeanScore(team_config_one)
 #> # A tibble: 7 × 4
 #>   team_id `Mean Score` `Median Score` `# Players`
 #>     <int>        <dbl>          <dbl>       <int>
-#> 1       1         52.4           49.4          11
-#> 2       2         52.4           50.7          11
-#> 3       3         51.0           49.1          11
-#> 4       4         48.9           48.0          11
-#> 5       5         50.0           50.1          11
-#> 6       6         48.8           47.7          11
-#> 7       7         47.2           47.6          11
+#> 1       1         44.2           42.1          11
+#> 2       2         48.2           45.8          11
+#> 3       3         54.0           52.8          11
+#> 4       4         40.0           37.1          11
+#> 5       5         51.6           49.7          11
+#> 6       6         51.1           48.1          11
+#> 7       7         56.1           56.2          11
 ```
 
 ## Code of Conduct

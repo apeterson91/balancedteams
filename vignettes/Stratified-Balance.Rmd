@@ -1,0 +1,43 @@
+---
+title: "Stratified-Balance"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Stratified-Balance}
+  %\VignetteDepends{dplyr}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+library(balancedteams)
+library(dplyr)
+```
+
+```{r}
+head(stratified_dataset)
+```
+
+
+
+```{r}
+teams <- GenerateBalancedTeams(stratified_dataset, 
+                               num_teams = 7,
+                               stratify = TRUE,
+                               method = "greedy")
+```
+
+```{r}
+teams %>% 
+  group_by(team_id) %>% 
+  summarize(mean_score = mean(score),
+            strata_mean = mean(strata*score),
+            num_strata = sum(strata),
+            num_players = n())
+```

@@ -4,6 +4,9 @@
 #' @param max_num_team Maximum number of groups / team. Default value is set
 #'   to be the floor of the total number of groups divided by the number of
 #'   teams.
+#' @param stratify Boolean that indicates whether or not scores should be
+#' stratified by the strata variable when calculating assignments. Note that
+#' this option is only available for the "greedy" algorithm.
 #' @param method One of c("greedy","MILP") indicating whether a greedy
 #'   algorithm or a mixed integer linear programming routine should be used
 #'   to estimate the team assignments. The latter provides the optimal solution
@@ -13,17 +16,16 @@ GenerateBalancedTeams <- function(df,
                                   num_teams,
                                   max_num_team =
                                     ceiling(nrow(df) / num_teams),
+                                  stratify = FALSE,
                                   method = "greedy") {
 
   stopifnot(method %in% c("greedy","MILP"), length(method) == 1)
+  if(stratify) {
+    stopifnot("strata" %in% colnames(df))
+  }
   # Probably need an error condition on # player / # team bounds
 
-  summarized <- df %>%
-    dplyr::group_by(group_id) %>%
-    dplyr::summarize(group_score = mean(player_score),
-                     num_players = dplyr::n()) %>%
-    dplyr::ungroup() %>%
-    dplyr::mutate(new_group_id = 1:dplyr::n())
+  summarized <- .create_summary_df(df, stratify)
 
   jdf <- df %>%
     dplyr::distinct(group_id) %>%
@@ -36,7 +38,14 @@ GenerateBalancedTeams <- function(df,
 
   num_groups <- length(unique(group_id))
 
-  if(method == "greedy") {
+  if(method == "greedy" && stratify) {
+    num_strata <- dplyr::pull(summarized, num_strata)
+    strata_score <- dplyr::pull(summarized)
+    team_assignments <- GreedyStratifiedTeams(group_id, group_score,
+                                              strata_score, num_players,
+                                              num_strata, num_teams,
+                                              num_groups, max_num_team)
+  } else if(method == "greedy" && !stratify) {
     team_assignments <- GreedyTeams(group_id, group_score, num_players,
                                     num_teams, num_groups, max_num_team)
   } else {
@@ -52,6 +61,38 @@ GenerateBalancedTeams <- function(df,
     dplyr::inner_join(pdf, by = c("player_id")) %>%
     dplyr::select(team_id, player_id, group_id, score, player_score)
 
+  if(stratify) {
+    player_id_strata <- df %>%
+      dplyr::select(player_id, strata)
+    team_assignments <- team_assignments %>%
+      left_join(player_id_strata, by = "player_id")
+  }
+
 
   return(team_assignments)
+}
+
+.create_summary_df <- function(df, stratify) {
+
+  if(stratify) {
+    summarized <- df %>%
+      dplyr::group_by(group_id) %>%
+      dplyr::summarize(group_score = mean(player_score),
+                       num_strata = sum(strata),
+                       num_players = dplyr::n(),
+                       strata_score = sum(player_score*strata) / num_strata
+                       ) %>%
+      dplyr::ungroup() %>%
+      dplyr::mutate(new_group_id = 1:dplyr::n(),
+                    strata_score = tidyr::replace_na(strata_score, 0))
+  } else {
+    summarized <- df %>%
+      dplyr::group_by(group_id) %>%
+      dplyr::summarize(group_score = mean(player_score),
+                       num_players = dplyr::n()) %>%
+      dplyr::ungroup() %>%
+      dplyr::mutate(new_group_id = 1:dplyr::n())
+  }
+
+  return(summarized)
 }

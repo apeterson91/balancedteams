@@ -5,17 +5,15 @@
 \title{Generate Balanced Teams}
 \usage{
 GenerateBalancedTeams(
-  group_id,
-  group_score,
+  df,
   num_teams,
-  max_num_team = ceiling(length(group_id)/num_teams),
+  max_num_team = ceiling(nrow(df)/num_teams),
+  stratify = FALSE,
   method = "greedy"
 )
 }
 \arguments{
-\item{group_id}{Identifier for group.}
-
-\item{group_score}{Score associated with group.}
+\item{df}{Data frame containing columns of player_id, group_id, and score.}
 
 \item{num_teams}{Number of teams to generate.}
 
@@ -23,10 +21,14 @@ GenerateBalancedTeams(
 to be the floor of the total number of groups divided by the number of
 teams.}
 
+\item{stratify}{Boolean that indicates whether or not scores should be
+stratified by the strata variable when calculating assignments. Note that
+this option is only available for the "greedy" algorithm.}
+
 \item{method}{One of c("greedy","MILP") indicating whether a greedy
 algorithm or a mixed integer linear programming routine should be used
-to estimate the team assignments. The latter is more optimal but the
-former is more memory efficient.}
+to estimate the team assignments. The latter provides the optimal solution
+but the former is more memory efficient.}
 }
 \description{
 Generate Balanced Teams

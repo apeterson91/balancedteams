@@ -36,30 +36,26 @@ head(mens_team)
 ```
 
 ```{r greedy_7}
-team_config_one <- GenerateBalancedTeams(mens_team$group_id, 
-                                         mens_team$group_score,
+team_config_one <- GenerateBalancedTeams(mens_team, 
                                          num_teams = 7)
 GetMeanScore(team_config_one)
 ```
 
 ```{r greedy_7_2}
-team_config_two <- GenerateBalancedTeams(mens_team$group_id, 
-                                         mens_team$group_score,
+team_config_two <- GenerateBalancedTeams(mens_team, 
                                          num_teams = 7)
 GetMeanScore(team_config_two)
 ```
 
 ```{r greedy_6}
-team_config_three <- GenerateBalancedTeams(mens_team$group_id, 
-                                           mens_team$group_score,
+team_config_three <- GenerateBalancedTeams(mens_team, 
                                            num_teams = 6)
 GetMeanScore(team_config_three)
 ```
 
 ```{r MILP}
-team_config_four <- GenerateBalancedTeams(mens_team$group_id, 
-                                           mens_team$group_score,
-                                           num_teams = 7,
-                                           method = "MILP")
+team_config_four <- GenerateBalancedTeams(mens_team, 
+                                          num_teams = 7,
+                                          method = "MILP")
 GetMeanScore(team_config_four)
 ```

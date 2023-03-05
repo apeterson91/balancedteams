@@ -4,12 +4,21 @@
 \alias{GreedyTeams}
 \title{Greedy Algorithm Teams Assignment}
 \usage{
-GreedyTeams(group_id, group_score, num_teams, num_groups, max_num_team)
+GreedyTeams(
+  group_id,
+  group_score,
+  num_players,
+  num_teams,
+  num_groups,
+  max_num_team
+)
 }
 \arguments{
 \item{group_id}{Identifier for group.}
 
 \item{group_score}{Score associated with group.}
+
+\item{num_players}{Number of players in each group.}
 
 \item{num_teams}{Number of teams to generate.}
 
