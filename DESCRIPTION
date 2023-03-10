@@ -22,5 +22,6 @@ Imports:
     magrittr,
     ompr,
     ompr.roi,
-    ROI.plugin.glpk
+    ROI.plugin.glpk,
+    tidyr
 Config/testthat/edition: 3
