@@ -12,7 +12,8 @@ GreedyStratifiedTeams(
   num_strata,
   num_teams,
   num_groups,
-  max_num_team
+  max_num_team,
+  max_strata = ceiling(sum(num_strata)/num_teams) + 1
 )
 }
 \arguments{
@@ -31,6 +32,8 @@ GreedyStratifiedTeams(
 \item{num_groups}{Number of groups included in group_id.}
 
 \item{max_num_team}{Maximum number of groups / team.}
+
+\item{max_strata}{Maximum number of strata to be met for each team.}
 }
 \description{
 Greedy Algorithm Team Assignment - Accounting for Strata
