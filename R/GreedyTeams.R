@@ -55,7 +55,7 @@ GreedyTeams <- function(group_id, group_score,
     dplyr::summarize(mean_score = sum(score) / sum(num_players),
                      num_players = sum(num_players)) %>%
     dplyr::ungroup() %>%
-    dplyr::arrange(mean_score, num_players) %>%
+    dplyr::arrange(num_players, mean_score) %>%
     dplyr::filter(num_players < max_num_team) %>%
     dplyr::filter(dplyr::row_number() == 1) %>%
     dplyr::pull(team_id)

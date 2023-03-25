@@ -9,10 +9,6 @@ test_that("GenerateBalancedTeams works", {
   expect_s3_class(GenerateBalancedTeams(mens_team,
                                      num_teams = 7),
                "data.frame")
-  expect_s3_class(GenerateBalancedTeams(mens_team,
-                                     num_teams = 7,
-                                     method = "MILP"),
-               "data.frame")
   expect_s3_class(GenerateBalancedTeams(stratified_dataset,
                                         num_teams = 7,
                                         method = "greedy",
@@ -23,4 +19,8 @@ test_that("GenerateBalancedTeams works", {
                                         method = "greedy",
                                         stratify = TRUE),
                   "data.frame")
+  expect_s3_class(GenerateBalancedTeams(mens_team,
+                                     num_teams = 7,
+                                     method = "MILP"),
+               "data.frame")
 })

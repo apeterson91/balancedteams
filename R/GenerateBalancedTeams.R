@@ -22,6 +22,8 @@ GenerateBalancedTeams <- function(df,
   stopifnot(method %in% c("greedy","MILP"), length(method) == 1)
   if(stratify) {
     stopifnot("strata" %in% colnames(df))
+    ## simple heuristic for max strata / team
+    max_strata <- ceiling(sum(df$strata) / num_teams) + 1
   }
   # Probably need an error condition on # player / # team bounds
 
@@ -30,7 +32,7 @@ GenerateBalancedTeams <- function(df,
   jdf <- df %>%
     dplyr::distinct(group_id) %>%
     dplyr::mutate(new_group_id = 1:dplyr::n()) %>%
-    dplyr::right_join(df, by = c("group_id"))
+    dplyr::right_join(df, by = c("group_id"), multiple = "all")
 
   group_id <- dplyr::pull(summarized, new_group_id)
   group_score <- dplyr::pull(summarized, group_score)
@@ -44,7 +46,8 @@ GenerateBalancedTeams <- function(df,
     team_assignments <- GreedyStratifiedTeams(group_id, group_score,
                                               strata_score, num_players,
                                               num_strata, num_teams,
-                                              num_groups, max_num_team)
+                                              num_groups, max_num_team,
+                                              max_strata)
   } else if(method == "greedy" && !stratify) {
     team_assignments <- GreedyTeams(group_id, group_score, num_players,
                                     num_teams, num_groups, max_num_team)
@@ -57,15 +60,15 @@ GenerateBalancedTeams <- function(df,
   jdf <- jdf %>% dplyr::select(-player_score)
   team_assignments <- team_assignments %>%
     dplyr::rename(new_group_id = "group_id") %>%
-    dplyr::right_join(jdf, by = c("new_group_id")) %>%
-    dplyr::inner_join(pdf, by = c("player_id")) %>%
+    dplyr::right_join(jdf, by = c("new_group_id"), multiple = "all") %>%
+    dplyr::inner_join(pdf, by = c("player_id"), multiple = "all") %>%
     dplyr::select(team_id, player_id, group_id, score, player_score)
 
   if(stratify) {
     player_id_strata <- df %>%
       dplyr::select(player_id, strata)
     team_assignments <- team_assignments %>%
-      dplyr::left_join(player_id_strata, by = "player_id")
+      dplyr::left_join(player_id_strata, by = "player_id", multiple = "all")
   }
 
 
